@@ -107,24 +107,24 @@ function placeInTable(y, x) {
   //and then be matched here
   let whichDiv = document.getElementById(`${x}-${y}`)
 
-  //add divs here
+  //add divs here and switch player
   if (currPlayer === 1) {
     newPiece.classList.add("piecep1")
     whichDiv.appendChild(newPiece)
-    currPlayer = 2
+    // currPlayer = 2
 
   } else if (currPlayer === 2) {
     newPiece.classList.add("piecep2")
     whichDiv.appendChild(newPiece)
-    currPlayer = 1
+    // currPlayer = 1
   }
 }
 
 /** endGame: announce game end */
 //it should announce the current player
 
-function endGame(msg) {
-  alert(`Winner is ${currPlayer}`)
+function endGame(player) {
+  alert(`Winner is Player ${player}`)
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -144,12 +144,22 @@ function handleClick(evt) {
   // TODO: add line to update in-memory board
   placeInTable(y, x);
 
-  checkForWin(board2);
+  // checkForWin();
+
+  console.log(checkForWin())
 
   // check for win
   if (checkForWin()) {
-    return endGame(`Player ${currPlayer} won!`);
+    endGame(currPlayer);
   }
+
+  if (currPlayer === 1) {
+    currPlayer = 2
+  } else {
+    currPlayer = 1
+  }
+
+  //switch players here with an if statement
 
   // check for tie
   // TODO: check if all cells in board are filled; if so call, call endGame
@@ -169,17 +179,17 @@ function checkForWin() {
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
-        y < height &&
+        y < width &&
         x >= 0 &&
-        x < width &&
-        board[y][x] === currPlayer
+        x < height &&
+        board2[x][y] === currPlayer
     );
   }
 
   // TODO: read and understand this code. Add comments to help you.
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
+  for (let y = 0; y < width; y++) {
+    for (let x = 0; x < height; x++) {
       let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
       let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
       let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
