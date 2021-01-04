@@ -5,6 +5,18 @@
  * board fills (tie)
  */
 
+
+//my only issue is trying to generate a board with a function rather than
+//hard coding a board
+
+//I use a lastIndexOf(undefined) method in order to fill the array board, which does not
+//seem to work whenever I dynamically generate a board 
+
+//board2 is used in the interim as my hardcoded board until I can work this out.
+
+//I would love to add a reset button to the game, as well as sound effects for 
+//when pieces are dropped
+
 const header = document.querySelector("h1")
 
 const width = 7;
@@ -12,196 +24,153 @@ const height = 6;
 
 let currPlayer = 1; // active player: 1 or 2
 let board = []; // array of rows, each row is array of cells  (board[y][x])
-// let board2 = [
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined],
-//   [undefined, undefined, undefined, undefined, undefined, undefined]
-// ]
+let board2 = [
+
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined]
+]
+
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
  */
 
+// function makeBoard() {
+//   const array = new Array(width)
+//   for (let i = 0; i < array.length; i++) {
+//     array[i] = new Array(height);
+//   } return array.fill([undefined, undefined, undefined, undefined,
+//     undefined, undefined])
+// }
+
 function makeBoard() {
-  //something isn't right, so I am using a hardcoded board until 
-  //I can figure this out
-  const newBoard = new Array(width)
-  for (let i = 0; i < array.length; i++) {
-    newBoard[i] = new Array(height);
+  const newBoard = new Array(6)
+  for (let i = 0; i < newBoard.length; i++) {
+    newBoard[i] = new Array(7).fill(undefined);
   }
-  // return array.fill([undefined, undefined, undefined, undefined,
-  //   //   undefined, undefined])
-  // }
+}
 
-  board = makeBoard()
+board = makeBoard()
 
-  /** makeHtmlBoard: make HTML table and row of column tops. */
+/** makeHtmlBoard: make HTML table and row of column tops. */
+function makeHtmlBoard() {
+  const htmlBoard = document.querySelector('#board')
+  //this creates the top row that you click and "drop" pieces through
+  const top = document.createElement("tr");
+  top.setAttribute("id", "column-top");
+  top.addEventListener("click", handleClick);
+  htmlBoard.append(top)
 
-  // function makeHtmlBoard() {
-  //   // TODO: get "htmlBoard" variable from the item in HTML w/ID of "board"
+  for (let x = 0; x < width; x++) {
+    const headCell = document.createElement("td");
+    headCell.setAttribute("id", x);
+    top.append(headCell);
+    console.log("it works")
+  }
 
-  //   // TODO: add comment for this code
-  //   var top = document.createElement("tr");
-  //   top.setAttribute("id", "column-top");
-  //   top.addEventListener("click", handleClick);
-
-  //   for (var x = 0; x < WIDTH; x++) {
-  //     var headCell = document.createElement("td");
-  //     headCell.setAttribute("id", x);
-  //     top.append(headCell);
-  //   }
-  //   htmlBoard.append(top);
-
-  function makeHtmlBoard() {
-    const htmlBoard = document.querySelector('#board')
-    // TODO: add comment for this code
-    //this creates the top row that you click and "drop" pieces through
-    const top = document.createElement("tr");
-    top.setAttribute("id", "column-top");
-    top.addEventListener("click", handleClick);
-    htmlBoard.append(top)
-
+  for (let y = 0; y < height; y++) {
+    const row = document.createElement("tr");
     for (let x = 0; x < width; x++) {
-      const headCell = document.createElement("td");
-      headCell.setAttribute("id", x);
-      top.append(headCell);
-      console.log("it works")
+      const cell = document.createElement("td");
+      cell.setAttribute("id", `${x}-${y}`);
+      row.append(cell);
     }
-
-    // TODO: add comment for this code
-    for (let y = 0; y < height; y++) {
-      const row = document.createElement("tr");
-      for (let x = 0; x < width; x++) {
-        const cell = document.createElement("td");
-        cell.setAttribute("id", `${x}-${y}`);
-        cell.classList.add("empty")
-        row.append(cell);
-        console.log("it works again!")
-      }
-      htmlBoard.append(row);
-    }
+    htmlBoard.append(row);
   }
-  /** findSpotForCol: given column x, return top empty y (null if filled) */
+}
+/** findSpotForCol: given column x, return top empty y (null if filled) */
 
-  function findSpotForCol(x) {
-    //how to look in an array within an array
-    let y = board[x].lastIndexOf(undefined)
-    if (currPlayer === 1) {
-      board[x][y] = 1
-    } else if (currPlayer === 2) {
-      board[x][y] = 2
-    }
-    return y;
-  }
+function findSpotForCol(x) {
+  //how to look in an array within an array
+  let y = board2[x].lastIndexOf(undefined)
+  board2[x][y] = currPlayer
+  return y;
+}
 
-  /** placeInTable: update DOM to place piece into HTML table of board */
+/** placeInTable: update DOM to place piece into HTML table of board */
 
-  function placeInTable(y, x) {
-    // TODO: make a div and insert into correct table cell
-    let newPiece = document.createElement("div")
-    //this should change, whichDiv should go according to the x and y
-    //coordinates from findspotforcol 
-    //and then be matched here
-    let whichDiv = document.getElementById(`${x}-${y}`)
+function placeInTable(y, x) {
+  //this function adds pieces to the HTML board
+  let newPiece = document.createElement("div")
+  let whichDiv = document.getElementById(`${x}-${y}`)
+  newPiece.classList.add(`piecep${currPlayer}`)
+  whichDiv.appendChild(newPiece)
+}
 
-    //add divs here and switch player
-    if (currPlayer === 1) {
-      newPiece.classList.add("piecep1")
-      whichDiv.appendChild(newPiece)
-      // currPlayer = 2
+/** endGame: announce game end */
+//it should announce the current player
 
-    } else if (currPlayer === 2) {
-      newPiece.classList.add("piecep2")
-      whichDiv.appendChild(newPiece)
-      // currPlayer = 1
-    }
+function endGame(currPlayer) {
+  alert(`Winner is Player ${currPlayer}`)
+}
+
+/** handleClick: handle click of column top to play piece */
+
+function handleClick(evt) {
+  // get x from ID of clicked cell
+  let x = +evt.target.id;
+  console.log(x)
+  // get next spot in column (if none, ignore click)
+  let y = findSpotForCol(x);
+  if (y === null) {
+    return;
   }
 
-  /** endGame: announce game end */
-  //it should announce the current player
+  // place piece in board and add to HTML table
+  placeInTable(y, x);
 
-  function endGame(player) {
-    alert(`Winner is Player ${player}`)
+  // check for win
+  if (checkForWin()) {
+    endGame(currPlayer);
   }
 
-  /** handleClick: handle click of column top to play piece */
+  //switch players here with an if statement
 
-  function handleClick(evt) {
-    // get x from ID of clicked cell
-    let x = +evt.target.id;
-    console.log(x)
-    // get next spot in column (if none, ignore click)
-    let y = findSpotForCol(x);
-    //might need to expand this more?
-    if (y === null) {
-      return;
-    }
+  if (currPlayer === 1) {
+    currPlayer = 2
+  } else {
+    currPlayer = 1
+  }
+}
 
-    // place piece in board and add to HTML table
-    // TODO: add line to update in-memory board
-    placeInTable(y, x);
+/** checkForWin: check board cell-by-cell for "does a win start here?" */
 
-    // checkForWin();
+function checkForWin() {
+  function _win(cells) {
+    // Check four cells to see if they're all color of current player
+    //  - cells: list of four (y, x) cells
+    //  - returns true if all are legal coordinates & all match currPlayer
 
-    console.log(checkForWin())
-
-    // check for win
-    if (checkForWin()) {
-      endGame(currPlayer);
-    }
-
-    if (currPlayer === 1) {
-      currPlayer = 2
-    } else {
-      currPlayer = 1
-    }
-
-    //switch players here with an if statement
-
-    // check for tie
-    // TODO: check if all cells in board are filled; if so call, call endGame
-
-    // switch players
-    // TODO: switch currPlayer 1 <-> 2
+    return cells.every(
+      ([y, x]) =>
+        y >= 0 &&
+        y < width &&
+        x >= 0 &&
+        x < height &&
+        board2[y][x] === currPlayer
+    );
   }
 
-  /** checkForWin: check board cell-by-cell for "does a win start here?" */
+  //checking within the array for a win condition
 
-  function checkForWin() {
-    function _win(cells) {
-      // Check four cells to see if they're all color of current player
-      //  - cells: list of four (y, x) cells
-      //  - returns true if all are legal coordinates & all match currPlayer
+  for (let y = 0; y < width; y++) {
+    for (let x = 0; x < height; x++) {
+      let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
-      return cells.every(
-        ([y, x]) =>
-          y >= 0 &&
-          y < width &&
-          x >= 0 &&
-          x < height &&
-          board2[x][y] === currPlayer
-      );
-    }
-
-    // TODO: read and understand this code. Add comments to help you.
-
-    for (let y = 0; y < width; y++) {
-      for (let x = 0; x < height; x++) {
-        let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-        let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
-        let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
-        let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
-
-        if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-          return true;
-        }
+      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+        return true;
       }
     }
   }
+}
 
-  makeBoard();
-  makeHtmlBoard();
+makeBoard();
+makeHtmlBoard();
